@@ -1,4 +1,5 @@
 import { Component } from '@angular/core';
+import { Post } from './_models/post';
 
 @Component({
   selector: 'app-root',
@@ -7,4 +8,9 @@ import { Component } from '@angular/core';
 })
 export class AppComponent {
   title = 'app';
+  storedPosts: Post[] = [];
+
+  newPostCreated(post) {
+    this.storedPosts.push(post);
+  }
 }
