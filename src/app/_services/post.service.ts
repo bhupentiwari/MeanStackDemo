@@ -16,14 +16,16 @@ constructor(private http: HttpClient) {
 }
 getPost() {
 
-   this.http.get<Post[]>('http://localhost:3000/api/post')
-    .subscribe((d) => {
-      this.posts = d;
+   this.http.get<{message: string, posts: Post[]}>('http://localhost:3000/api/post')
+    .subscribe((postData) => {
+      this.posts = postData.posts;
       this.postsUpdated.next([...this.posts]);
     });
  // return [...this.posts];
 
 }
+
+
 
 getPostUpdateListner() {
   return this.postsUpdated.asObservable();
@@ -31,8 +33,13 @@ getPostUpdateListner() {
 
 addPost(tit: string, con: string) {
   const post: Post = {title : tit, content : con};
-  this.posts.push(post);
-  this.postsUpdated.next([...this.posts]);
+  this.http.post<{message: string}>('http://localhost:3000/api/post', post)
+      .subscribe((responseData) => {
+        console.log(responseData.message);
+        this.posts.push(post);
+        this.postsUpdated.next([...this.posts]);
+      });
 }
+
 }
 
