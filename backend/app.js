@@ -30,11 +30,14 @@ app.post("/api/post",(req,res,next) =>{
         title: req.body.title,
         content : req.body.content
     });
-    post.save();
-    console.log(post);
-    res.status(201).json({
-        message : 'Post Added Successfully'
+    post.save().then(result =>{
+        //console.log(post);
+        res.status(201).json({
+            message : 'Post Added Successfully',
+            postId: result._id
+        });
     });
+   
 });
 
 app.get("/api/post",(req,res,next) =>{   
@@ -47,14 +50,12 @@ app.get("/api/post",(req,res,next) =>{
     });  
 });
 
-app.delete("/api/post/:id",(req,res,next) =>{   
-   
+app.delete("/api/post/:id",(req,res,next) =>{      
     Post.deleteOne({_id: req.params.id}).then(result => {
         res.status(200).json({
             message : 'Post Deleted Successfully'        
         });
-    })
-   
+    })   
 });
 
 module.exports = app;

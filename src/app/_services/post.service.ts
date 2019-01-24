@@ -16,7 +16,6 @@ constructor(private http: HttpClient) {
 
 }
 getPost() {
-
    this.http.get<{message: string, posts: any}>('http://localhost:3000/api/post')
     .pipe(map((postData) => {
         return postData.posts.map(post => {
@@ -31,11 +30,7 @@ getPost() {
       this.posts = tranformedObject;
       this.postsUpdated.next([...this.posts]);
     });
- // return [...this.posts];
-
 }
-
-
 
 getPostUpdateListner() {
   return this.postsUpdated.asObservable();
@@ -43,9 +38,9 @@ getPostUpdateListner() {
 
 addPost(tit: string, con: string) {
   const post: Post = { id: null, title : tit, content : con};
-  this.http.post<{message: string}>('http://localhost:3000/api/post', post)
+  this.http.post<{message: string, postId: string}>('http://localhost:3000/api/post', post)
       .subscribe((responseData) => {
-        console.log(responseData.message);
+        post.id = responseData.postId;
         this.posts.push(post);
         this.postsUpdated.next([...this.posts]);
       });
@@ -55,6 +50,9 @@ deletePost(postId: string) {
   this.http.delete('http://localhost:3000/api/post/' + postId)
     .subscribe(() => {
       console.log('Deleted Successfully');
+      const updatedPost = this.posts.filter(post => post.id !== postId);
+      this.posts = updatedPost;
+      this.postsUpdated.next([...this.posts]);
     });
 }
 }
