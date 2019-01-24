@@ -1,11 +1,18 @@
 const express = require('express');
 const bodyParser = require('body-parser');
-
-
+const Post = require('./models/post');
+const mongoose = require('mongoose');
 const app =express();
 app.use(bodyParser.json());
 //app.use(bodyParser.urlencoded({extended: false}));
 
+mongoose.connect('mongodb+srv://bhupentiwari:NkelmwM9g38eqc1F@cluster0-alxw5.mongodb.net/node-angular?retryWrites=true')
+    .then( () =>{
+        console.log('Connected successfully');
+    })
+    .catch( () => {
+        console.log('Connection Failed');
+    });
 
 app.use((req,res,next) => {
     res.setHeader("Access-Control-Allow-Origin","*");
@@ -18,24 +25,36 @@ app.use((req,res,next) => {
     next();
 });
 
-app.post("/api/post",(req,res,next) =>{
-    const post = req.body;
+app.post("/api/post",(req,res,next) =>{    
+    const post = new Post({
+        title: req.body.title,
+        content : req.body.content
+    });
+    post.save();
     console.log(post);
     res.status(201).json({
         message : 'Post Added Successfully'
     });
 });
 
-app.get("/api/post",(req,res,next) =>{
-    const posts = [
-        {id: "232323", title: "This Is First Post", content: "Post is coming from server"},
-        {id: "787654", title: "This Is Second Post", content: "Post is coming from server"},
-        {id: "23345652", title: "This Is Third Post", content: "Post is coming from server"}
-    ];
-    res.status(200).json({
-        message : 'Post Fetched Successfully',
-        posts: posts
-    });
+app.get("/api/post",(req,res,next) =>{   
+    Post.find().then(documents => {
+        console.log(documents);
+        res.status(200).json({
+            message : 'Post Fetched Successfully',
+            posts: documents
+        });
+    });  
+});
+
+app.delete("/api/post/:id",(req,res,next) =>{   
+   
+    Post.deleteOne({_id: req.params.id}).then(result => {
+        res.status(200).json({
+            message : 'Post Deleted Successfully'        
+        });
+    })
+   
 });
 
 module.exports = app;
