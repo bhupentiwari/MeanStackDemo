@@ -1,10 +1,11 @@
 <mat-card>
-  <form (submit)="onSubmitPost(postForm)" #postForm="ngForm">
+  <mat-spinner *ngIf="isLoading"></mat-spinner>
+  <form (submit)="onSavePost(postForm)" #postForm="ngForm" *ngIf="!isLoading">
       <mat-form-field>
           <input matInput 
             type="text" 
             name="title" 
-            ngModel 
+            [ngModel]="post?.title"
             required
             #title="ngModel"
             placeholder="Post Title"
@@ -15,7 +16,7 @@
           <textarea 
             matInput 
             rows="3" 
-            ngModel 
+            [ngModel] ="post?.content" 
             name="content" 
             required  
             #content="ngModel"
